@@ -1,5 +1,5 @@
 const numero_moedas = 70;
-const tempo_inicial = 88880;
+const tempo_inicial = 5;
 let pontos = 0;
 
   let tempo = 0;

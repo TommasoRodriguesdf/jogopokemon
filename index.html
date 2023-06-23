@@ -1,22 +1,175 @@
 <!DOCTYPE html>
-<html lang="pt">
- <meta http-equiv="X-UA-Compatible" content="IE=edge">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Jogo - juntando Bitcoin</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+<html lang="pt-br">
 
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
+
+    <title>Jogo - Juntando Pérolas</title>
+    <style></style>
 </head>
 
 <body onload="iniciaJogo()">
-    <h1>Vamos jogar</h1>
-    <strong >PONTOS:</strong> <span  id="pontos">  0</span> <br>
-    <strong >TEMPO RESTANTE:<span  id="tempo">  5</span></strong>
-  
+    <h1>Bora Jogar?</h1>
 
-<div id="tela"></div>
+    <div id="tela" class="d-flex justify-content-center"></div>
+    <div>
+        <strong>Pontos:</strong> <span id="pontos">0</span>
+    </div>
+    <div><strong>Tempo:</strong> <span id="tempo"></span></div>
 
- 
- <script src="script.js"></script>
- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+    <table>
+        <caption>Pontuações mais altas:</caption>
+        <thead>
+            <tr>
+                <th>Posição</th>
+                <th>Nome do Jogador</th>
+                <th>Pontuação</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="tabela-pontuacoes">
+            <tr></tr>
+        </tbody>
+    </table>
+
+    <button onclick="removerTudo()" type="button" class="game-button">
+        Remover Pontuações
+    </button>
+
+    <button onclick="atualizarTabela()" type="button" class="game-button">
+        Atualizar Tabela
+    </button>
+
+    <button onclick="iniciaJogo()" type="button" class="game-button">
+        Iniciar Novo Jogo
+    </button>
+
+
+    <script>
+        let som = new Audio("somMoeda.mp3");
+        let somDeFundo = new Audio("somDeFundo.mp3");
+
+        somDeFundo.loop = true;
+
+        const numero_moedas = 100;
+        const tempo_inicial = 5;
+        let pontos = 0;
+        let tempo = 0;
+        let timer = null;
+
+        function iniciaJogo() {
+            somDeFundo.play();
+            pontos = 0;
+            tempo = tempo_inicial;
+            let tela = document.getElementById("tela");
+            tela.innerHTML = "";
+
+            for (let i = 0; i < numero_moedas; ++i) {
+                let moeda = document.createElement("img");
+                moeda.src =
+                    "https://static.vecteezy.com/system/resources/previews/009/379/340/original/sea-shell-with-pearl-clipart-design-illustration-free-png.png";
+                moeda.id = "j" + i;
+                moeda.onclick = function () {
+                    pegaMoeda(this);
+                };
+                tela.appendChild(moeda);
+            }
+            timer = setInterval(contaTempo, 1000);
+        }
+
+        function pegaMoeda(moeda) {
+            moeda.src =
+                "https://i.gifer.com/origin/73/73ec412cb51e29f117839d27b78c9ff9_w200.gif";
+            ++pontos;
+            som.play();
+            let contadorPontos = document.getElementById("pontos");
+            contadorPontos.innerText = pontos;
+        }
+
+        function contaTempo() {
+            if (tempo > 0) {
+                --tempo;
+                let contadorTempo = document.getElementById("tempo");
+                contadorTempo.innerText = tempo;
+            } else {
+                clearInterval(timer);
+
+                // Armazenar pontuação atual no Local Storage
+                let pontuacoes = localStorage.getItem("pontuacoes") ? JSON.parse(localStorage.getItem("pontuacoes")) : [];
+                let nomeJogador = prompt("Insira seu nome:");
+                pontuacoes.push({ nome: nomeJogador, pontos: pontos });
+                localStorage.setItem("pontuacoes", JSON.stringify(pontuacoes));
+
+                // Perguntar ao jogador se ele quer jogarnovamente
+                let jogarNovamente = confirm("Fim de jogo! Você fez " + pontos + " pontos. Quer jogar novamente?");
+                if (jogarNovamente) {
+                    reiniciaJogo();
+                }
+            }
+        }
+
+        function atualizarTabela() {
+            let pontuacoes = localStorage.getItem("pontuacoes") ? JSON.parse(localStorage.getItem("pontuacoes")) : [];
+            let tabela = document.getElementById("tabela-pontuacoes");
+            tabela.innerHTML = "";
+
+            pontuacoes.sort((a, b) => b.pontos - a.pontos);
+
+            for (let i = 0; i < pontuacoes.length; ++i) {
+                let linha = document.createElement("tr");
+
+                let posicao = document.createElement("td");
+                posicao.innerText = i + 1;
+                linha.appendChild(posicao);
+
+                let nome = document.createElement("td");
+                nome.innerText = pontuacoes[i].nome;
+                linha.appendChild(nome);
+
+                let pontos = document.createElement("td");
+                pontos.innerText = pontuacoes[i].pontos;
+                linha.appendChild(pontos);
+
+                let acoes = document.createElement("td");
+
+                let botaoRemover = document.createElement("button");
+                botaoRemover.innerText = "Remover";
+                botaoRemover.onclick = function () {
+                    removerPontuacao(i);
+                };
+                acoes.appendChild(botaoRemover);
+
+                linha.appendChild(acoes);
+
+                tabela.appendChild(linha);
+            }
+        }
+
+        function removerTudo() {
+            localStorage.removeItem("pontuacoes");
+            atualizarTabela();
+        }
+
+        function removerPontuacao(index) {
+            let pontuacoes = localStorage.getItem("pontuacoes") ? JSON.parse(localStorage.getItem("pontuacoes")) : [];
+            pontuacoes.splice(index, 1);
+            localStorage.setItem("pontuacoes", JSON.stringify(pontuacoes));
+            atualizarTabela();
+        }
+
+        function reiniciaJogo() {
+            pontos = 0;
+            tempo = tempo_inicial;
+            let tela = document.getElementById("tela");
+            tela.innerHTML = "";
+            iniciaJogo();
+        }
+
+        atualizarTabela();
+    </script>
 </body>
+
 </html>
