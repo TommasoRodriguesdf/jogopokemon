@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous">
 
-    <title>Jogo - Juntando Pérolas</title>
+    <title>Jogo - pokebola </title>
     <style></style>
 </head>
 
@@ -70,7 +70,7 @@
             for (let i = 0; i < numero_moedas; ++i) {
                 let moeda = document.createElement("img");
                 moeda.src =
-                    "https://static.vecteezy.com/system/resources/previews/009/379/340/original/sea-shell-with-pearl-clipart-design-illustration-free-png.png";
+                    "pokM.png";
                 moeda.id = "j" + i;
                 moeda.onclick = function () {
                     pegaMoeda(this);
@@ -82,7 +82,7 @@
 
         function pegaMoeda(moeda) {
             moeda.src =
-                "https://i.gifer.com/origin/73/73ec412cb51e29f117839d27b78c9ff9_w200.gif";
+                "pok2.jpg";
             ++pontos;
             som.play();
             let contadorPontos = document.getElementById("pontos");
